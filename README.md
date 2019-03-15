@@ -1,5 +1,7 @@
 # Notes on Kafka
 
+## TODO: migrate to project to hold all notes for all projects as a MONO-REPO
+
 ## Kafka Terminlology
 
 * __record__ Are a record of an event, they are immutable.  They are append only and are made of a key value and timestamp.  Records are persisted to DISK and not to memory! It uses the OS's caching system instead of an explicit cache.

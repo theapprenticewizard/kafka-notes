@@ -744,9 +744,6 @@ PUT /products
 				"is_active" : {
                     "type" : "boolean"
 				}
-				.
-				.
-				.
             }
     	}
     }
@@ -805,9 +802,6 @@ Shows the properties of a given document.
     "is_active" : {
     	"type" : "boolean"
 	}
-	.
-	.
-	.
 }
 ```
 

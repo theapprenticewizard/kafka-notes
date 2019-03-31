@@ -266,3 +266,34 @@ POST people/_doc/NpK61GkBCMHpv4E0rPH0/_update
 
 #### Upserting
 
+If you want to update a field, but do something if the field doesn't exist already.  IE.  Set the price of an item and update the price if it doesn't exist already then the best thing to do would be to add an upsert to your update request.
+
+```http
+POST people/_doc/NpK61GkBCMHpv4E0rPH0/_update
+{
+  "script" : "ctx._source.age += 1",
+  "upsert" : {
+      "age" : 10
+  }
+}
+
+ # response
+ {
+  "_index" : "people",
+  "_type" : "_doc",
+  "_id" : "NpK61GkBCMHpv4E0rPH0",
+  "_version" : 5,
+  "result" : "updated",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 9,
+  "_primary_term" : 1
+}
+
+```
+
+
+

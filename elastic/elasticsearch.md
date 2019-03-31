@@ -52,7 +52,60 @@ Beats are pre-configured ingestion plugins for elastic search.  Beats allow for 
 
 Extensions for elastic search that add new features that enhance elastic search itself.  Some come pre-bundled with elastic search now!  Used to be closed source and a way to reward enterprise customers for using elastic search through the elastic company. But now it's fully open soured.
 
+## Installation and Configuration
 
+Download [here](https://www.elastic.co/downloads/elasticsearch) or use the following `docker-compose.yml`.  If installing on windows it's recommended to install elastic search as a `service` so you can have automatic startup and manage it though the dedicated `services` window;
 
+For docker, if installed; simply run `docker-compose up` to bring up the service and `docker-compose down` to take down the service as well.  This will expose elastic search at the standard port of  `9200` and Kibana at `5601`
 
+```yml
+version: '3'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.7.0
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.7.0
+    ports:
+      - "5601:5601"
+```
+
+## Managing documents
+
+Elasticsearch uses a RESTful API to manage documents, so in order to create, read, update or delete you need to make am HTTP request, each HTTP method's semantic meaning is used (except patch).
+
+### Managing Indexes
+
+#### Create
+
+In order to add a new index all you need to do is send an HTTP PUT request to a new URL.
+
+```http
+PUT /new_index
+
+#response
+{
+  "acknowledged" : true,
+  "shards_acknowledged" : true,
+  "index" : "new_index"
+}
+```
+
+#### Delete
+
+In order to delete an index simply perform a `DELETE` request on the same path you created the index on.
+
+```http
+DELETE /new_index
+```
 

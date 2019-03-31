@@ -399,7 +399,9 @@ POST /people/_delete_by_query
 
 
 
-#### Batch Updates
+#### Batch Ops
+
+##### Create
 
 For creating documents in bulk (rather than making an http request machine gun) use the bulk API as shown like this.
 
@@ -447,6 +449,56 @@ POST /people/_doc/_bulk
         "_seq_no" : 1,
         "_primary_term" : 1,
         "status" : 201
+      }
+    }
+  ]
+}
+```
+
+##### Update
+
+It's also possible to perform batch updates as well, these have PATCH semantics!
+
+```http
+POST /people/_doc/_bulk
+{ "update" : { "_id" : 100 } }
+{ "doc" : { "age" : 55 } }
+{ "update" : { "_id" : 101 } }
+{ "doc" : { "age" : 58 } }
+
+# response
+{
+  "took" : 0,
+  "errors" : false,
+  "items" : [
+    {
+      "update" : {
+        "_index" : "people",
+        "_type" : "_doc",
+        "_id" : "100",
+        "_version" : 3,
+        "result" : "noop",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "status" : 200
+      }
+    },
+    {
+      "update" : {
+        "_index" : "people",
+        "_type" : "_doc",
+        "_id" : "101",
+        "_version" : 2,
+        "result" : "noop",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "status" : 200
       }
     }
   ]

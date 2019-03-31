@@ -580,6 +580,8 @@ Contains general meta information, this can be used as an application specific s
 
 Elastic search has a wide variety of types, most of them should be familiar if you've coded with any programming language before.  Some of the common types that are available are.
 
+a list of compatible data types can be found [here](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/mapping-types.html)
+
 #### Text Data (_text_)
 
 Text data is indexed by the search engine in order to perform searches. Usually this data represents a block of text such as a blog post or a product description.
@@ -680,4 +682,26 @@ examples:
 ```
 
 ##### Geo Shapes (geo_shape)
+
+Can store a polygon containing information to define a set of coordinates as a polygon area. 
+
+#### Specialized Data Types
+
+Elastic Search has several specialized data types for storing useful information in an optimized way these include
+
+##### IP Addresses (_ip_)
+
+Elastic search can store IP Addresses as a native type, they can be either IPV4 or IPV6 this is likely very useful for logging IP addresses rather than using DNS for logging as that can change.
+
+##### Completion Data  Type (_completion_)
+
+Provides search as you type data (similar to google) auto-complete is pretty cool IMO. Usually stores a small amount of data, as it needs to have super efficient lookup!
+
+##### Attachments (_attachment_)
+
+Stores an index of an index, this is analyzed by the search engine. Uses Apache Tikka for lexical analysis. Attachment support is provided by a plugin.
+
+
+
+
 

@@ -652,9 +652,9 @@ IE.
 
 #### Nested Data Types (_nested_)
 
-Instead of directly nesting objects Elasticsearch has a better concept for handling nested objects (as most document database naturally would).  Nested documents are "hidden" and separately indexed, as well they require nested queries to be effective. 
+Instead of directly nesting objects Elasticsearch has a better concept for handling nested objects (as most document database naturally would).  Nested documents are "hidden" and separately indexed, as well they require nested queries to be looked up. 
 
-#### Geo Data Types
+#### Geographic Data Types
 
 It is possible to store geographic information inside of elastic search. Geo data types have many subtypes
 
@@ -678,4 +678,6 @@ examples:
     "location" : "asdfa3223dsdd"
 }
 ```
+
+##### Geo Shapes (geo_shape)
 

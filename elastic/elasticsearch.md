@@ -652,5 +652,30 @@ IE.
 
 #### Nested Data Types (_nested_)
 
-Instead of directly nesting objects Elasticsearch has a better concept for handling nested objects (as most document database naturally would).  You would need to map these explicitly however, all queries in nested documents require a secondary query for each of them. 
+Instead of directly nesting objects Elasticsearch has a better concept for handling nested objects (as most document database naturally would).  Nested documents are "hidden" and separately indexed, as well they require nested queries to be effective. 
+
+#### Geo Data Types
+
+It is possible to store geographic information inside of elastic search. Geo data types have many subtypes
+
+##### Geo Point (_geo_point_)
+
+Can be represented by a geo hash or latitude or longitude. as well there are other ways to specify lat and long such as an array or a single string. 
+
+examples:
+
+```json
+{
+    "location" : {
+        "lat" : 33.23413,
+        "lon" : 24.23425
+    }
+}
+
+// or
+
+{
+    "location" : "asdfa3223dsdd"
+}
+```
 

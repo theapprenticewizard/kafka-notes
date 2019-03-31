@@ -568,7 +568,7 @@ The current version of the data, this should basically only be used for optimist
 
 Contains the document that was provided directly.  This is basically the the pure document that you are create/read/updating/deleting without the extra overhead of indexing.
 
-### _routing
+#### _routing
 
 Stores how the document should be routed by shard.
 
@@ -600,7 +600,7 @@ where scaled float is a float that is stored in the database in scientific notat
 
 despite the name, dates can be dates or date-times.  Dates can be dynamically mapped in many ways, including mapping to more than one way at a time.  For example you can map a date by epoch_ms AND an ISO date string at the same time.  Elastic search has multiple ways of mapping date times built in.
 
-### Binary Data (_binary_)
+#### Binary Data (_binary_)
 
 Elasticsearch can keep track of BLOBs in order to store complex serialized data if so required.  This can be such things like images or other data.  Obviously you cannot index or analyze BLOB data, that would be too inefficient. Likely you'll want to attach some metadata to the BLOB in the same object.
 
@@ -701,7 +701,115 @@ Provides search as you type data (similar to google) auto-complete is pretty coo
 
 Stores an index of an index, this is analyzed by the search engine. Uses Apache Tikka for lexical analysis. Attachment support is provided by a plugin.
 
+### Mapping Existing Indices
 
+To change the mapping of a field simply make a call to the `_mapping` route and `PUT` the mappings you wish to add.  Note, as mentioned before this will cause an error if there is already a mapping created for that key! There are some exceptions to this rule, however - you may update the index of an object inside of a document if it hasn't been added yet. (as objects aren't really real in Elasticsearch)
+
+#### Updating an existing Index
+
+```http
+PUT /products/_doc/_mapping
+{
+    "properties" : {
+        "discount" : {
+            "type" : "double"
+        }
+    }
+}
+
+# response
+{
+  "acknowledged" : true
+}
+```
+
+#### Updating the type of an existing field
+
+You can't update the type of an existing field in an index as mentioned above.  However, you can delete the index and create a new one.
+
+### Setting a new index with manual mapping
+
+When you create an index it is possible to set the new index manually. And disable the automatic mapping here is an example of how to do that. 
+
+```http
+PUT /products
+{
+    "mappings" : {
+    	"default" : {
+            "dynamic" : false,
+            "properties" : {
+                "in_stock" : {
+					"type" : "text"
+				},
+				"is_active" : {
+                    "type" : "boolean"
+				}
+				.
+				.
+				.
+            }
+    	}
+    }
+}
+
+# response
+{
+  "acknowledged" : true,
+  "shards_acknowledged" : true,
+  "index" : "products"
+}
+
+```
+
+### Common Mapping Parameters
+
+As seen above the `mapping` object can take many different kinds of parameters.  though, it's not necessary to memorize all of these a few of them will come in handy in many cases.
+
+#### Coerce (_coerce_)
+
+can be used to force type coercion on a mapping for example, "5" can be mapped to the integer 5.  Without type coercion non-valid types are ignored.
+
+#### Copy To (_copy_to_)
+
+can be used to create a read-only copy of the data that is added. For example, if you have a first name and a last name and you want to provide a name field based on the first name + the last name separated by a space.
+
+```json
+{
+    "first_name" : {
+        "type" : "text",
+        "copy_to" : "full_name"
+	},
+    "last_name" : {
+        "type" : "text",
+        "copy_to" : "full_name"
+	},
+    "full_name" : {
+        "type" : "text"
+	}
+}
+```
+
+#### Dynamic (_dynamic_)
+
+Disabled or enables (on by default though) dynamic mapping to determine the types used automatically.
+
+#### Properties
+
+Shows the properties of a given document.
+
+```json
+"properties" : {
+	"in_stock" : {
+		"type" : "text"
+	},
+    "is_active" : {
+    	"type" : "boolean"
+	}
+	.
+	.
+	.
+}
+```
 
 
 

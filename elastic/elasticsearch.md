@@ -116,7 +116,7 @@ DELETE /new_index
 
 #### CRUD for ducuments
 
-##### Create
+#### Create
 
 In order to create a documents simply just `POST` the document into to elastic search, do note.  The second path variable is the _type_ of the document you wish to create, however - as mentioned above it is __deprecated__.  Instead of posting to a custom type name instead have the second path variable be `_doc` to indicate it is a document.  Another note, when you `POST` a new document to an index that hasn't been created yet  - it will automatically create the index.  If this behavior is not desirable you can simply disable it in the settings.
 
@@ -143,4 +143,64 @@ POST people/_doc
   "_primary_term" : 1
 }
 ```
+
+#### Read
+
+In order to read a single document (without performing a query) you'll want to simply make a `GET` request. And use the id of the document as a path variable.
+
+```http
+GET people/_doc/NpK61GkBCMHpv4E0rPH0
+
+# response
+{
+  "_index" : "people",
+  "_type" : "_doc",
+  "_id" : "NpK61GkBCMHpv4E0rPH0",
+  "_version" : 1,
+  "_seq_no" : 0,
+  "_primary_term" : 1,
+  "found" : true,
+  "_source" : {
+    "name" : "Raymond",
+    "age" : 24
+  }
+}
+```
+
+#### Updating
+
+Updating can happen in two ways, you can update with PUT or PATCH semantics. This means that you can perform a partial update of a resource in place (where only the things you change are updated - which is useful for high-concurrency environments where the same document is update often) or you can update a document with PUT semantics where the whole document is replace with a new document.  This works well when the old document is invalid as a whole, or when the updates aren't occurring with a high rate of concurrency. 
+
+##### PUT semantics
+
+Example...
+
+```http
+PUT people/_doc/NpK61GkBCMHpv4E0rPH0
+{
+  "name" : "Someone Else",
+  "age" : 48
+}
+
+# response
+{
+  "_index" : "people",
+  "_type" : "_doc",
+  "_id" : "NpK61GkBCMHpv4E0rPH0",
+  "_version" : 2,
+  "_seq_no" : 1,
+  "_primary_term" : 1,
+  "found" : true,
+  "_source" : {
+    "name" : "Someone Else",
+    "age" : 48
+  }
+}
+```
+
+
+
+##### PATCH semantics
+
+
 

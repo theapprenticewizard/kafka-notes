@@ -169,11 +169,11 @@ GET people/_doc/NpK61GkBCMHpv4E0rPH0
 
 #### Updating
 
-Updating can happen in two ways, you can update with PUT or PATCH semantics. This means that you can perform a partial update of a resource in place (where only the things you change are updated - which is useful for high-concurrency environments where the same document is update often) or you can update a document with PUT semantics where the whole document is replace with a new document.  This works well when the old document is invalid as a whole, or when the updates aren't occurring with a high rate of concurrency. 
+Updating can happen in two forms - however it's important to note that event though updating with PATCH semantics exists - it's "more" thread safe but it's not entirely thread safe as the PATCH semantics update mechanism in elastic search simply fetches the document save a new version and re-indexes it just as if we made a PUT request. However, this is generally safe - as it occurs without the overheard of the network, decreasing the odds of a concurrent update breaking our system.
 
 ##### PUT semantics
 
-Example...
+Updates the version of the document as well as the source!  Example...
 
 ```http
 PUT people/_doc/NpK61GkBCMHpv4E0rPH0
@@ -202,5 +202,57 @@ PUT people/_doc/NpK61GkBCMHpv4E0rPH0
 
 ##### PATCH semantics
 
+Also updates the version (as it's doing the same thing internally!)
 
+```http
+POST people/_doc/NpK61GkBCMHpv4E0rPH0/_update
+{
+  "doc" : {
+    "age" : 33
+  }
+}
+
+# response
+{
+  "_index" : "people",
+  "_type" : "_doc",
+  "_id" : "NpK61GkBCMHpv4E0rPH0",
+  "_version" : 3,
+  "result" : "updated",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 2,
+  "_primary_term" : 1
+}
+```
+
+##### PATCH Semantics with scripting
+
+Important to note that the script is just a text field.  As well, to update the "source object" (more on this later) you need to specify `ctx._source` first, with the assumption that `ctx` is short for _context_ as there needs to be some object to specify!
+
+```http
+POST people/_doc/NpK61GkBCMHpv4E0rPH0/_update
+{
+  "script" : "ctx._source.age += 5"
+}
+
+# response
+{
+  "_index" : "people",
+  "_type" : "_doc",
+  "_id" : "NpK61GkBCMHpv4E0rPH0",
+  "_version" : 4,
+  "result" : "updated",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 3,
+  "_primary_term" : 1
+}
+```
 

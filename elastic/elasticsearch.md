@@ -179,6 +179,8 @@ GET people/_doc/NpK61GkBCMHpv4E0rPH0
 
 Updating can happen in two forms - however it's important to note that event though updating with PATCH semantics exists - it's "more" thread safe but it's not entirely thread safe as the PATCH semantics update mechanism in elastic search simply fetches the document save a new version and re-indexes it just as if we made a PUT request. However, this is generally safe - as it occurs without the overheard of the network, decreasing the odds of a concurrent update breaking our system.
 
+for details concerning concurrency read the following [guide in the docs](<https://www.elastic.co/guide/en/elasticsearch/guide/current/concurrency-solutions.html>)
+
 ##### PUT semantics
 
 Updates the version of the document as well as the source!  Example...
@@ -398,6 +400,4 @@ POST /people/_delete_by_query
 
 
 #### Batch Updates
-
-
 

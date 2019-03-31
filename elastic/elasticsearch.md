@@ -56,7 +56,7 @@ Extensions for elastic search that add new features that enhance elastic search 
 
 Download [here](https://www.elastic.co/downloads/elasticsearch) or use the following `docker-compose.yml`.  If installing on windows it's recommended to install elastic search as a `service` so you can have automatic startup and manage it though the dedicated `services` window;
 
-For docker, if installed; simply run `docker-compose up` to bring up the service and `docker-compose down` to take down the service as well.  This will expose elastic search at the standard port of  `9200` and Kibana at `5601`
+For docker, if installed; simply run `docker-compose up` to bring up the service and `docker-compose down` to take down the service as well.  This will expose elastic search at the standard port of  `9200` and Kibana at `5601`.
 
 ```yml
 version: '3'
@@ -93,7 +93,7 @@ In order to add a new index all you need to do is send an HTTP PUT request to a 
 ```http
 PUT /new_index
 
-#response
+# response
 {
   "acknowledged" : true,
   "shards_acknowledged" : true,
@@ -107,5 +107,40 @@ In order to delete an index simply perform a `DELETE` request on the same path y
 
 ```http
 DELETE /new_index
+
+# response
+{
+  "acknowledged" : true
+}
+```
+
+#### CRUD for ducuments
+
+##### Create
+
+In order to create a documents simply just `POST` the document into to elastic search, do note.  The second path variable is the _type_ of the document you wish to create, however - as mentioned above it is __deprecated__.  Instead of posting to a custom type name instead have the second path variable be `_doc` to indicate it is a document.  Another note, when you `POST` a new document to an index that hasn't been created yet  - it will automatically create the index.  If this behavior is not desirable you can simply disable it in the settings.
+
+```http
+POST people/_doc
+{
+  "name" : "Raymond",
+  "age" : 24
+}
+
+# response
+{
+  "_index" : "people",
+  "_type" : "_doc",
+  "_id" : "NpK61GkBCMHpv4E0rPH0",
+  "_version" : 1,
+  "result" : "created",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 0,
+  "_primary_term" : 1
+}
 ```
 

@@ -8,10 +8,6 @@ created-on: 2019-03-31
 
 
 
-[TOC]
-
-
-
 ## Architecture
 
 ### 1. Indices
@@ -267,4 +263,6 @@ POST people/_doc/NpK61GkBCMHpv4E0rPH0/_update
   "_primary_term" : 1
 }
 ```
+
+#### Upserting
 

@@ -790,7 +790,7 @@ can be used to create a read-only copy of the data that is added. For example, i
 
 Disabled or enables (on by default though) dynamic mapping to determine the types used automatically.
 
-#### Properties
+#### Properties (_properties_)
 
 Shows the properties of a given document.
 
@@ -805,5 +805,91 @@ Shows the properties of a given document.
 }
 ```
 
+#### Store Normalization Factors (_norms_)
 
+Norms are used to calculate relevancy, this property determines if norms should be added for a given text field.  This is on by default.
+
+```json
+"properties" : {
+	"description" : {
+        "type" : "text",
+        "norms" : false
+	}
+}
+```
+
+#### Format (_format_)
+
+Used for specifying a format, formats or custom format for usually dates. By default for dates, the format will allow either `epoch_millis` or `strict_date_optional_time`
+
+```javascript
+"properties" : {
+	"timestamp" : {
+        "type" : "date",
+        "format" : "strict_date_optional_time||epoch_millis"
+	}
+}
+```
+
+#### Null Value (_null_value_)
+
+Allows for determining the null value that a document will coalesce to for example, if a number is null you can have it be 0 by default. 
+
+```javascript
+"properties" : {
+	"in_stock" : {
+        "type" : "long",
+        "null_value" : 0
+	}
+}
+```
+
+#### Fields (_fields_)
+
+Used to specify how to store a field in another way.  using "fields" allows us to specify that a property has more than one type. This is often the case for text fields as they sometimes should be indexed as keywords.
+
+```javascript
+"properties" : {
+	"tags" : {
+        "type" : "text",
+        "norms" : false,
+        "fields" : {
+            "keyword" : {
+                "type" : "keyword"
+            }     
+        }
+	}
+}
+```
+
+### Custom Date Formats
+
+It is possible to specify custom date formats as well in elastic search. The following is used to support Yoda date formats. (Year mOnth DAte)
+
+```http
+PUT /products/_doc/_mapping
+{
+    "properties" : {
+        "created" : {
+            "type" : "date",
+            "format" : "yyyy/MM/dd HH:mm:ss||yyyy/MM/dd"
+        }
+    }
+}
+```
+
+### Updating Mappings By Query
+
+It's not always required that you have a mapping for each object.  Sources, for example are just sometimes stored in text with no mapping provided yet.  So it's entirely possible to update all indices providing an explicit mapping after data has been provided for a mapping that hasn't existed yet.  To do this you can perform a query like so.
+
+```http
+POST /products/_update_by_query?conflicts=proceed
+{
+    "query" : {
+        "term" : {
+            "discount" : 20
+        }
+    }
+}
+```
 

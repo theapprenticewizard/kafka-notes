@@ -893,3 +893,5 @@ POST /products/_update_by_query?conflicts=proceed
 }
 ```
 
+## Text Analysis
+

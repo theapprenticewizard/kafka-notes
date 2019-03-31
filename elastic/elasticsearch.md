@@ -266,7 +266,7 @@ POST people/_doc/NpK61GkBCMHpv4E0rPH0/_update
 
 #### Upserting
 
-If you want to update a field, but do something if the field doesn't exist already.  IE.  Set the price of an item and update the price if it doesn't exist already then the best thing to do would be to add an upsert to your update request.
+If you want to insert or update a document where you're not sure if the document is yet to exist than you want to perform an upsert.  Note, in the below example if you try to update using the script a document that doesn't have the field necessary to update, even though the field is in your upsert it will cause an exception.  Be careful of this! 
 
 ```http
 POST people/_doc/NpK61GkBCMHpv4E0rPH0/_update
@@ -294,6 +294,110 @@ POST people/_doc/NpK61GkBCMHpv4E0rPH0/_update
 }
 
 ```
+
+and here's the same request with nothing at that id.
+
+```http
+POST people/_doc/new_id/_update
+{
+  "script" : "ctx._source.age += 1",
+  "upsert" : {
+      "age" : 10
+  }
+}
+
+# response
+{
+  "_index" : "people",
+  "_type" : "_doc",
+  "_id" : "new_id",
+  "_version" : 1,
+  "result" : "created",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 1,
+  "_primary_term" : 1
+}
+
+# here's the state of the new document
+{
+  "_index" : "people",
+  "_type" : "_doc",
+  "_id" : "new_id",
+  "_version" : 1,
+  "_seq_no" : 1,
+  "_primary_term" : 1,
+  "found" : true,
+  "_source" : {
+    "age" : 10
+  }
+}
+```
+
+#### Deleting Documents
+
+In order to delete a document simply just make a `DELETE` request to the URL of the the document you've created.
+
+example
+
+```http
+DELETE people/_doc/new_id
+
+# response
+{
+  "_index" : "people",
+  "_type" : "_doc",
+  "_id" : "new_id",
+  "_version" : 2,
+  "result" : "deleted",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 2,
+  "_primary_term" : 1
+}
+```
+
+##### Deleting By Query
+
+```http
+POST /people/_delete_by_query
+{
+  "query" : {
+    "match" : {
+      "name" : "Raymond"
+    }
+  }
+}
+
+# response
+{
+  "took" : 41,
+  "timed_out" : false,
+  "total" : 1,
+  "deleted" : 1,
+  "batches" : 1,
+  "version_conflicts" : 0,
+  "noops" : 0,
+  "retries" : {
+    "bulk" : 0,
+    "search" : 0
+  },
+  "throttled_millis" : 0,
+  "requests_per_second" : -1.0,
+  "throttled_until_millis" : 0,
+  "failures" : [ ]
+}
+```
+
+
+
+#### Batch Updates
 
 
 

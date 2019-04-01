@@ -895,3 +895,226 @@ POST /products/_update_by_query?conflicts=proceed
 
 ## Text Analysis
 
+When text data is added to elastic search, it goes through an analyzer.  These analyzers standardize and index the data for searching. this allows for the search engine to function efficiently. The analyzers also perform normalization on the data as well in order to allow for a consistent format to be scanned.  The default analyzer, which is acceptable in most cases takes all the text and tokenizes it into terms and then stores them in the "inverted index" in order to be accessed later by the search engine.
+
+### The analysis process
+
+An analyzer is made up of three components, a character filter, a token filter and a tokenizer. The default tokenizer is called the "standout" tokenizer and ignores most special characters.  In addition to removing special characters the tokenizer also marks the position of each token in a stream of text. Which is used for proximity searches and fuzzy finding. After the character filter occurs, the token filter will perform it's job. The most common token filter is the lowercase filter which simply converts all of the text into lowercase, as the case of the search generally doesn't matter. Secondly, another use case for token filters is the "stop" filters which removes stop words from the token stream.  Examples of these words are prepositions, "the", "at", "around" as they don't usually have any semantic meaning for searching things. Finally, another token filter that is common is the "synonym" filter, its used to mark tokens that have the same meaning.  For example "great" may have the same meaning as "awesome" and so forth, so searching by "awesome" may increase the likelihood of finding a document with the keyword "great" being found.
+
+### Using the Analyzer API
+
+You can analyzer a piece of text and view the generated tokens from text by using the analyzer API.  The main reason for doing this is to check some sample text against different analyzers, allowing you to mix and match filters in your search engine.
+
+```http
+POST /_analyze
+{
+  "tokenizer": "standard", 
+  "filter" : ["lowercase"],
+  "text" : "Hello World!"
+}
+
+# response
+{
+  "tokens" : [
+    {
+      "token" : "hello",
+      "start_offset" : 0,
+      "end_offset" : 5,
+      "type" : "<ALPHANUM>",
+      "position" : 0
+    },
+    {
+      "token" : "world",
+      "start_offset" : 6,
+      "end_offset" : 11,
+      "type" : "<ALPHANUM>",
+      "position" : 1
+    }
+  ]
+}
+```
+
+You can also provide a whole analyzer like so.
+
+```http
+POST /_analyze
+{
+    "analyzer" : "standard",
+    "text" : "Lorem Ipsum set Dolor"
+}
+
+# response
+{
+  "tokens" : [
+    {
+      "token" : "lorem",
+      "start_offset" : 0,
+      "end_offset" : 5,
+      "type" : "<ALPHANUM>",
+      "position" : 0
+    },
+    {
+      "token" : "ipsum",
+      "start_offset" : 6,
+      "end_offset" : 11,
+      "type" : "<ALPHANUM>",
+      "position" : 1
+    },
+    {
+      "token" : "set",
+      "start_offset" : 12,
+      "end_offset" : 15,
+      "type" : "<ALPHANUM>",
+      "position" : 2
+    },
+    {
+      "token" : "dolor",
+      "start_offset" : 16,
+      "end_offset" : 21,
+      "type" : "<ALPHANUM>",
+      "position" : 3
+    }
+  ]
+}
+```
+
+
+
+ ### What is the Inverted Index?
+
+An inverted index is an index holding the information of what tokens are available within a full text field of a document. Having an inverted index allows the search engine to determine things like relevancy or if the search matches a specific search term. The data stored in the inverted index can be one of either of two things.  Either meta-data regarding terms, such as the number of times "pizza" is shown in total across an index under the "product_description" field. Or, it can also mean the table of mentions of pizza for each document in the index.  For example, in one description, pizza could be mentioned 5 times, that would mean that pizza is more relevant to that specific products.  This however, can be a problem due to "keyword stuffing" if users get to choose their own search keyword, but hopefully there are tweaks you can make in the analyzer for that.
+
+### Common Character Filters
+
+#### HTML Strip Character Filter (_html_strip_)
+
+Strips out html tags, and turns escaped Unicode characters into a normalized form.
+
+#### Mapping Character Filter (_mapping_)
+
+Replaces one character or set of characters with another set of characters.  This is applied with a dictionary of characters to interchange. For example, for all text occurrences of the word "banana" you can have it replaced with "potato".
+
+#### Pattern Replace Filter (_pattern_replace_)
+
+Replaces a set of characters using a regular expression. For example, this could be used for a profanity filter as well. And can replace the profanity with a friendly version of the text.  This will also allow you to use capture groups as well!
+
+### Common Tokenizers
+
+There are three kinds of tokenizers: Word oriented tokenizers, Partial Word Tokenizer and Structured Text Tokenizers. 
+
+#### Word Oriented Tokenizers
+
+Word oriented tokenizers work at the word level and allow for human-readable searches. 
+
+##### Standard Tokenizer (_standard_)
+
+Separates whitespace into tokens and is the default tokenizer provided for search.
+
+##### Letter Tokenizer (_letter_)
+
+Divides texts into tokens by looking for letters exclusively runs of letters become tokens.  For example I'm becomes two tokens because an apostrophe does not constitute as a letter.
+
+##### Lowercase tokenizer (_lowercase_)
+
+Performs the same as the letter tokenizer but lowercases as it goes. 
+
+##### Whitespace Tokenizer
+
+Tokenizes based on whitespace, will preserve special characters however such as periods and exclamation points!
+
+##### UAX URL Email Tokenizer (_uax_url_email_)
+
+Performs the same as the standard tokenizer but preserves the details of an email.
+
+#### Partial Word Tokenizers
+
+Breaks words into pieces for indexing.
+
+##### N-Gram Tokenizer (_ngram_)
+
+Tokenizes based on an N-Gram which allows for words to be broken up.  The N-Gram tokens contain the original words as well as partial pieces of the word based on a sliding window that is based on the "N" you set.  For example an N-Gram of the word "hello" will become [ "he", "el", "lo", "hel", "hell", "ell", "ello" "hello"] as an N-Gram of 2.  This is great if you want to map partial words such as morphemes.
+
+##### Edge N-Gram Tokenizer (_edge_ngram_)
+
+Breaks text into words when encountering certain characters then splits those up using an N-Gram that always starts from index.  This creates fewer tokens than a standard n-gram. Example. [ "he", "hel", "hell", "hello"] would be an n-gram value of two which is less than the above example.
+
+#### Structured Text Tokenizers
+
+Structured text tokenizers work with structured texts such as zip codes, IP addresses and more.
+
+##### Keyword Tokenizer (_keyword_)
+
+A no-op tokenizer used for keywords (obviously) such as "health insurance" rather than tokenizing everything. 
+
+##### Pattern Tokenizer (_pattern_)
+
+A tokenizer that tokenizers based on a given regular expression's capture group.
+
+##### Path Tokenizer (_path_hierarchy_)
+
+Tokenizes text based on a standard path hierarchy, useful for file paths.
+
+### Common Token Filters
+
+#### Standard Token Filter (_standard_)
+
+Doesn't do anything, for future uses.  This is also the default token filter.
+
+#### Lowercase Token Filter (_lowercase_)
+
+Turns the tokens all into lowercase.
+
+#### Uppercase Token Filter (_uppercase_)
+
+Turns all the tokens into uppercase.
+
+#### NGram token filter (_nGram_)
+
+Does the same things as the nGram token filter, but does it at a later layer in order to make the api as flexible as possible.
+
+#### Edge NGram Token Filter(edgeNGram)
+
+Does the same thing as the tokenizer with the same name, for the same reason as the nGram token filter.
+
+#### Stop Token Filter (_stop_)
+
+Removes "stop words" such as prepositions and articles. This has support for MOST languages!
+
+#### Word Delimiter Token Filter (_word_delimiter_)
+
+Turns words into sub words such as turning WiFi into [ "wi", "fi"]
+
+#### Stemmer Token Filter (_stemmer_)
+
+Stems words into their own form, for example. driving will be stemmed into drive.
+
+#### Keyword Marker Filter (_keyword_marker_)
+
+Protects specified words from being stemmed.
+
+#### Snowball Token Filter (_snowball_)
+
+Applies the _snowball_ stemming algorithm to your inverse index.
+
+#### Synonym token filter (_synonym_)
+
+Is used to apply synonyms as part of the filter. Synonyms are stored at the same level for phrase searches.
+
+#### Trim Filter (_trim_)
+
+Trims whitespace
+
+#### Length Filter (_length_)
+
+Filters out words that are too long or too short.
+
+#### Truncate Filter (_truncate_)
+
+Truncates words that are too long
+
+
+
+
+
+
+

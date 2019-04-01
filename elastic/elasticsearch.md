@@ -1112,6 +1112,136 @@ Filters out words that are too long or too short.
 
 Truncates words that are too long
 
+### Analyzers
+
+#### Standard Analyzer (_standard_)
+
+Is the default analyzer, removes punctuation and separates text using a letter character filter.
+
+#### Simple Analyzer (_simple_)
+
+Uses the character token filter, and lowercases all of the letter.s
+
+#### Stop Analyze (_stop_)
+
+Works the same way as the stop analyzer but also  removes stop words. (like the stop token filter)
+
+#### Language Analyzers (_english... and other ones_)
+
+Preconfigured analyzers for specific languages including synonym support.  This is probably the easiest, most powerful one.
+
+#### Keyword Analyzer (_keyword_)
+
+Doesn't do anything! Used for determining keywords.
+
+#### Pattern Analyzer (_pattern_)
+
+Splits items into tokens based on a regex.
+
+#### Whitespace Analyzer
+
+Analyzes text by just tokenizing based on the whitespace character filter.  Doesn't do anything really!
+
+### Setting a Custom Analyzer
+
+```http
+PUT /existing_analyzer_config
+{
+  "settings" : {
+    "analysis": {
+      "analyzer": {
+        "english_stop" : {
+          "type" : "standard",
+          "stopwords" : "_english_"
+        }
+      },
+      "filter" : {
+        "my_stemmer" : {
+          "type" : "stemmer",
+          "name" : "english"
+        }
+      }
+    }
+  }
+}
+
+# response
+{
+  "acknowledged" : true,
+  "shards_acknowledged" : true,
+  "index" : "existing_analyzer_config"
+}
+
+```
+
+##### And testing our custom analyzer
+
+```http
+POST /existing_analyzer_config/_analyze
+{
+  "analyzer": "english_stop",
+  "text" : "I'm in the mood for drinking semi-dry wine today!"
+}
+
+# response
+{
+  "tokens" : [
+    {
+      "token" : "i'm",
+      "start_offset" : 0,
+      "end_offset" : 3,
+      "type" : "<ALPHANUM>",
+      "position" : 0
+    },
+    {
+      "token" : "mood",
+      "start_offset" : 11,
+      "end_offset" : 15,
+      "type" : "<ALPHANUM>",
+      "position" : 3
+    },
+    {
+      "token" : "drinking",
+      "start_offset" : 20,
+      "end_offset" : 28,
+      "type" : "<ALPHANUM>",
+      "position" : 5
+    },
+    {
+      "token" : "semi",
+      "start_offset" : 29,
+      "end_offset" : 33,
+      "type" : "<ALPHANUM>",
+      "position" : 6
+    },
+    {
+      "token" : "dry",
+      "start_offset" : 34,
+      "end_offset" : 37,
+      "type" : "<ALPHANUM>",
+      "position" : 7
+    },
+    {
+      "token" : "wine",
+      "start_offset" : 38,
+      "end_offset" : 43,
+      "type" : "<ALPHANUM>",
+      "position" : 8
+    },
+    {
+      "token" : "today",
+      "start_offset" : 44,
+      "end_offset" : 49,
+      "type" : "<ALPHANUM>",
+      "position" : 9
+    }
+  ]
+}
+
+```
+
+
+
 
 
 

@@ -1242,9 +1242,105 @@ POST /existing_analyzer_config/_analyze
 
 
 
+## Searching with Elastic Search
+
+### Performing a query
+
+````http
+ GET /products/_doc/_search
+ {
+     "query" : {
+         "match" : {
+             "description" : "Red Wine"
+         }
+     }
+ }
+````
+
+#### Query String Queries
+
+```http
+GET /products/_doc/_search?q=Red+Wine
+```
+
+It's also possible to use an asterisk to match all documents. Using simply `*`
+
+```http
+GET /products/_doc/_search?q=*
+```
+
+It's also possible to add Boolean logic to your queries. Like this.
+
+```http
+GET /products/_doc/_search?q=tag:potato AND description:banana
+```
+
+Finally it's also possible to analyze just a single document to determine how it is searched. Here's an example.
+
+```http
+GET /products/_doc/1/_explain
+{
+  "query" : {
+    "term" : {
+      "name" : "lobster"
+    }
+  }
+}
+```
+
+### Contexts
+
+When dealing with elastic search queries you need to keep in mind that there are two different ways to search for something.  
+
+#### Query Context
+
+Is used when you want to search something that is indexed as a text document, mostly all textual data should go under this - and this is the main feature of the search engine.
+
+#### Filter Context
+
+Filtering is when you want to filter out results, but you don't want to effect relevancy.  For example you can filter out items that contain "tomato" in the search result. Only items with a "tomato" match will be shown but, how many times or how relevant to "tomato" the texts are will not effect the search results.  As an additional bonus filters can be cached while queries cannot.  (this is because queries have much more complicated logic going on!)
 
 
 
+### Term Queries vs Match Queries (full text)
+
+#### Term Queries
+
+Term queries perform a textual search but do not apply an analyzer to the query term itself.  This makes for a faster, but sometimes unexpected query as things like synonyms or case case sensitivity will not be processed.  (if the search index potato, and you searched Potato - it may not match!)
+
+Example:
+
+```http
+GET /products/_doc/_search
+{
+  "query" : {
+    "term" : {
+      "name" : "Lobster"
+    }
+  }
+}
+```
+
+
+
+#### Match Queries
+
+Perform a match on the target data, this will use the analyzer to make the query so whatever analyzer that is applied to the _inverse index_ of a search field will intern be applied to the query.
+
+
+
+Example.
+
+```http
+GET /products/_doc/_search
+{
+  "query" : {
+    "match" : {
+      "name" : "lobster"
+    }
+  }
+}
+```
 
 
 

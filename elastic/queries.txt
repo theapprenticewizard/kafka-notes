@@ -1,0 +1,431 @@
+GET /products/_doc/_search
+{
+  "query" : {
+    "multi_match" : {
+      "query" : "lobster",
+      "fields" : [
+        "name", "description"  
+      ]
+    }
+  }
+}
+
+# in order to get all the stats about a sinle index
+GET /products/_stats
+
+# or get All the stats (insert meme)
+GET /_stats
+
+# term level queries are not analyzed
+GET /products/_doc/_search
+{
+  "query" : {
+    "term" : {
+      "is_active" : {
+        "value" : true
+      }
+    }
+  }
+}
+
+# same but shorthand
+GET /products/_doc/_search
+{
+  "query" : {
+    "term" : {
+      "is_active" : true
+    }
+  }
+}
+
+
+# searching to multiple terms at once
+GET /products/_doc/_search
+{
+  "query" : {
+    "terms" : {
+      "tags.keyword" : [
+          "Soup", "Cake"
+        ]
+    }
+  }
+}
+
+# same as before but shorthand
+GET /products/_doc/_search
+{
+  "query" : {
+    "ids" : {
+      "values" : [ 1, 2, 3 ]
+    }
+  }
+}
+
+# you can provide a range in your search
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "in_stock" : {
+        "gte" : 1,
+        "lte" : 5
+      }
+    }
+  }
+}
+
+# you can provide a range in your search
+# bounds not required
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "in_stock" : {
+        "gte" : 1
+      }
+    }
+  }
+}
+
+# you can also change the format of the dates!
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "created" : {
+        "gte" : "2010/05/01"
+      }
+    }
+  }
+}
+
+# you can also change the format of the dates!
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "created" : {
+        "gte" : "01-01-2010",
+        "lte" : "31-12-2010",
+        "format" : "dd-MM-yyyy"
+      }
+    }
+  }
+}
+
+# working with relative dates
+# you can also change the format of the dates!
+# M = Months, m = minutes, d = day
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "created" : {
+        "gte" : "2010/01/01||-1y-100d/M"
+      }
+    }
+  }
+}
+
+
+# rouning can happen before or after
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "created" : {
+        "gte" : "2010/01/01||/M-1y-100d"
+      }
+    }
+  }
+}
+
+
+# query with now
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "created" : {
+        "gte" : "now/M-1y-100d"
+      }
+    }
+  }
+}
+
+# query for only items that exist
+# uses the _field names for null checking
+# also checks null values (like defaults)
+GET /products/_doc/_search
+{
+  "query" : {
+    "exists" : {
+      "field" : "tags"
+    }
+  }
+}
+
+# prefix the query
+GET /products/_doc/_search
+{
+  "query" : {
+    "prefix" : {
+      "tags.keyword" : "Vege" 
+    }
+  }
+}
+
+# searching with wildcards
+# '#' matches any character sequence
+# '?' matches any single character
+GET /products/_doc/_search
+{
+  "query" : {
+    "wildcard" : {
+      "tags.keyword" : "Veget?ble" 
+    }
+  }
+}
+
+# searching with wildcards
+# '#' matches any character sequence
+# '?' matches any single character
+# dont' wildcard at the beginning of a term!
+GET /products/_doc/_search
+{
+  "query" : {
+    "wildcard" : {
+      "tags.keyword" : "Veg*le" 
+    }
+  }
+}
+
+# Elastic Search uses Luscene's regexp engine
+# ^...$ and \d are not supported. 
+# avoid putting regex wildcards to the beginning of an 
+# index
+GET /products/_doc/_search
+{
+  "query" : {
+    "regexp" : {
+      "tags.keyword" : "Veget[a-zA-Z]+ble"
+    }
+  }
+}
+
+GET /products/_doc/_search
+{
+  "query" : {
+    "multi_match" : {
+      "query" : "lobster",
+      "fields" : [
+        "name", "description"  
+      ]
+    }
+  }
+}
+
+# in order to get all the stats about a sinle index
+GET /products/_stats
+
+# or get All the stats (insert meme)
+GET /_stats
+
+# term level queries are not analyzed
+GET /products/_doc/_search
+{
+  "query" : {
+    "term" : {
+      "is_active" : {
+        "value" : true
+      }
+    }
+  }
+}
+
+# same but shorthand
+GET /products/_doc/_search
+{
+  "query" : {
+    "term" : {
+      "is_active" : true
+    }
+  }
+}
+
+
+# searching to multiple terms at once
+GET /products/_doc/_search
+{
+  "query" : {
+    "terms" : {
+      "tags.keyword" : [
+          "Soup", "Cake"
+        ]
+    }
+  }
+}
+
+# same as before but shorthand
+GET /products/_doc/_search
+{
+  "query" : {
+    "ids" : {
+      "values" : [ 1, 2, 3 ]
+    }
+  }
+}
+
+# you can provide a range in your search
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "in_stock" : {
+        "gte" : 1,
+        "lte" : 5
+      }
+    }
+  }
+}
+
+# you can provide a range in your search
+# bounds not required
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "in_stock" : {
+        "gte" : 1
+      }
+    }
+  }
+}
+
+# you can also change the format of the dates!
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "created" : {
+        "gte" : "2010/05/01"
+      }
+    }
+  }
+}
+
+# you can also change the format of the dates!
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "created" : {
+        "gte" : "01-01-2010",
+        "lte" : "31-12-2010",
+        "format" : "dd-MM-yyyy"
+      }
+    }
+  }
+}
+
+# working with relative dates
+# you can also change the format of the dates!
+# M = Months, m = minutes, d = day
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "created" : {
+        "gte" : "2010/01/01||-1y-100d/M"
+      }
+    }
+  }
+}
+
+
+# rouning can happen before or after
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "created" : {
+        "gte" : "2010/01/01||/M-1y-100d"
+      }
+    }
+  }
+}
+
+
+# query with now
+GET /products/_doc/_search
+{
+  "query" : {
+    "range" : {
+      "created" : {
+        "gte" : "now/M-1y-100d"
+      }
+    }
+  }
+}
+
+# query for only items that exist
+# uses the _field names for null checking
+# also checks null values (like defaults)
+GET /products/_doc/_search
+{
+  "query" : {
+    "exists" : {
+      "field" : "tags"
+    }
+  }
+}
+
+# prefix the query
+GET /products/_doc/_search
+{
+  "query" : {
+    "prefix" : {
+      "tags.keyword" : "Vege" 
+    }
+  }
+}
+
+# searching with wildcards
+# '#' matches any character sequence
+# '?' matches any single character
+GET /products/_doc/_search
+{
+  "query" : {
+    "wildcard" : {
+      "tags.keyword" : "Veget?ble" 
+    }
+  }
+}
+
+# searching with wildcards
+# '#' matches any character sequence
+# '?' matches any single character
+# dont' wildcard at the beginning of a term!
+GET /products/_doc/_search
+{
+  "query" : {
+    "wildcard" : {
+      "tags.keyword" : "Veg*le" 
+    }
+  }
+}
+
+# Elastic Search uses Luscene's regexp engine
+# ^...$ and \d are not supported. 
+# avoid putting regex wildcards to the beginning of an 
+# index
+GET /products/_doc/_search
+{
+  "query" : {
+    "regexp" : {
+      "tags.keyword" : "Veget[a-zA-Z]+ble"
+    }
+  }
+}
+
+

@@ -1344,3 +1344,5 @@ GET /products/_doc/_search
 
 
 
+## Term Level Queries
+

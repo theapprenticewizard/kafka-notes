@@ -1,0 +1,153 @@
+# 1. Please write a query matching products that didn’t sell very well, being products where the “sold” field has a value of 
+less than 10 (sold < 10).
+POST /products/_doc/_search
+{
+  "query" : {
+    "bool" : {
+      "filter" : [
+        { "range" : { "sold" : { "lt" : 10 } } }  
+      ]
+    }
+  }
+}
+
+# 2. Please write a query that matches products that sold okay, meaning less than 30 and greater than or equal to 10 (sold < 
+30 && sold >= 10).
+POST /products/_doc/_search
+{
+  "query" : {
+    "bool" : {
+      "filter" : [
+        { "range" : { "sold" : { "lt" : 30 } } },
+        { "range" : { "sold" : { "gte" : 10 } } }
+      ]
+    }
+  }
+}
+
+# faster version of the same thing
+GET /products/_serach
+{
+  "query" : {
+    "range" : {
+      "sold" : {
+        "lt" : 30,
+        "gte" : 10
+      }
+    }
+  }
+}
+
+# 3. Please write a query that matches documents containing the term “Meat” within the “tags” field.
+
+
+# Note - if you just do "tags" without the .keyword you'll  end up trying to search the inverted index instead of the 
+keyword itself (which is indexed as "meat" (all lower case!)) and it won't come up with anything.  For direct "keyword" 
+filtering it's best you use the .keyword object from the text keyword!
+GET /products/_search
+{
+  "query" : {
+    "term" : {
+      "tags.keyword": "Meat"
+    }
+  }
+}
+
+# 4. Please write a query matching documents containing one of the terms "Tomato" and "Paste" within the "name" field.
+
+# Hint: The query might not match anything... ;-)
+# won't match because of inverted index! ( I guess that's intentional!) - keyword won't work because, we want a partial text 
+match without wildcards
+GET /products/_search
+{
+  "query" : {
+    "bool" : {
+      "should": [
+        {
+          "term" : {
+            "name": "Tomato"
+          }
+        },
+        {
+          "term" : {
+            "name": "Paste"
+          }
+        }
+      ]
+    }
+  }
+}
+
+# instructor's version
+GET /products/_search
+{
+  "query" : {
+    "terms" : {
+      "name" : [ "Tomato", "Paste" ]
+    }
+  }
+}
+
+# fixed version - use match query (no the question though)
+GET /products/_search
+{
+  "query" : {
+    "bool" : {
+      "should": [
+        {
+          "match" : {
+            "name": "Tomato"
+          }
+        },
+        {
+          "match": {
+            "name": "Paste"
+          }
+        }
+      ]
+    }
+  }
+}
+
+# Instructor wanted a wildcard version
+GET /products/_search
+{
+  "query" : {
+    "wildcard" : {
+      "name" : "past?"
+    }
+  }
+}
+
+#5. Please write a query that matches products with a "name" field including “pasta”, “paste”, or similar. The query should 
+be dynamic and not use the "terms" query clause.
+
+GET /products/_search
+{
+  "query" : {
+    "bool" : {
+      "should": [
+        {
+          "match" : {
+            "name": "pasta"
+          }
+        },
+        {
+          "match": {
+            "name": "paste"
+          }
+        }
+      ]
+    }
+  }
+}
+
+# 6. Please write a query that matches products that contain a number within their "name" field.
+
+GET /products/_search
+{
+  "query" : {
+    "regexp": {
+      "name": "[0-9]+"
+    }
+}

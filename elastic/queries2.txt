@@ -1,0 +1,211 @@
+GET /products/_doc/_search
+{
+  "query" : {
+    "match" : {
+      "name" : "lobster"
+    }
+  }
+}
+
+
+GET /recipes/_stats
+
+POST /recipes/_doc/_search
+{
+  "query" : {
+    "match_all" : {}
+  }
+}`
+
+
+POST /recipes/_doc/_search
+{
+  "query" : {
+    "match" : {
+      "description" : "cheesy"
+    }
+  }
+}
+
+GET /recipes/_doc/_mapping?include_type_name=true
+
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "match" : {
+      "title" : "Recipes with pasta or spaghetti"
+    }
+  }
+}
+
+# generally not useful for users, but fasterish
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "match" : {
+      "title" : {
+        "query" : "Recipes with pasta or spaghetti",
+        "operator" : "and"
+      }
+    }
+  }
+}
+
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "match" : {
+      "title" : {
+        "query" : "pasta or spaghetti",
+        "operator" : "and"
+      }
+    }
+  }
+}
+
+
+# phrase match
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "match_phrase" : {
+      "title" : "spaghetti puttanesca"
+    }
+  }
+}
+
+# phrase match
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "match_phrase" : {
+      "title" : "puttanesca spaghetti"
+    }
+  }
+}
+
+# multi match
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "multi_match" : {
+      "query" : "pasta",
+      "fields" : [ "title", "description" ]
+    }
+  }
+}
+
+# multi match (everything)
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "multi_match" : {
+      "query" : "pasta",
+    }
+  }
+} GET /products/_doc/_search
+{
+  "query" : {
+    "match" : {
+      "name" : "lobster"
+    }
+  }
+}
+
+
+GET /recipes/_stats
+
+POST /recipes/_doc/_search
+{
+  "query" : {
+    "match_all" : {}
+  }
+}`
+
+
+POST /recipes/_doc/_search
+{
+  "query" : {
+    "match" : {
+      "description" : "cheesy"
+    }
+  }
+}
+
+GET /recipes/_doc/_mapping?include_type_name=true
+
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "match" : {
+      "title" : "Recipes with pasta or spaghetti"
+    }
+  }
+}
+
+# generally not useful for users, but fasterish
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "match" : {
+      "title" : {
+        "query" : "Recipes with pasta or spaghetti",
+        "operator" : "and"
+      }
+    }
+  }
+}
+
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "match" : {
+      "title" : {
+        "query" : "pasta or spaghetti",
+        "operator" : "and"
+      }
+    }
+  }
+}
+
+
+# phrase match
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "match_phrase" : {
+      "title" : "spaghetti puttanesca"
+    }
+  }
+}
+
+# phrase match
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "match_phrase" : {
+      "title" : "puttanesca spaghetti"
+    }
+  }
+}
+
+# multi match
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "multi_match" : {
+      "query" : "pasta",
+      "fields" : [ "title", "description" ]
+    }
+  }
+}
+
+# multi match (everything)
+GET /recipes/_doc/_search
+{
+  "query" : {
+    "multi_match" : {
+      "query" : "pasta",
+    }
+  }
+} 
